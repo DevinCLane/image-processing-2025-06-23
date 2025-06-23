@@ -1,0 +1,17 @@
+{
+    "name": "image-processing-2025-06-23",
+    "private": true,
+    "version": "1.0.0",
+    "scripts": {
+        "dev": "concurrently \"npm run dev -w client\" \"npm run dev -w server\"",
+        "build": "npm run build -w client && npm run build -w server",
+        "test": "npm run test -w client && npm run test -w server"
+    },
+    "workspaces": [
+        "apps/*"
+    ],
+    "devDependencies": {
+        "concurrently": "^9.2.0",
+        "typescript": "^5.8.3"
+    }
+}
