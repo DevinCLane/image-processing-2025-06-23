@@ -1,15 +1,42 @@
-import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
+import { serve } from "@hono/node-server";
+import { Hono } from "hono";
+import {
+    createIPX,
+    createIPXWebServer,
+    ipxFSStorage,
+    ipxHttpStorage,
+} from "ipx";
 
-const app = new Hono()
+const ipx = createIPX({
+    // todo: which directory am i serving images from
+    storage: ipxFSStorage({ dir: "./static" }),
+    // todo: which domain hosts my remote images? unsplash?
+    httpStorage: ipxHttpStorage({
+        domains: [],
+    }),
+});
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+// hono instance for image routes
+const img = new Hono();
 
-serve({
-  fetch: app.fetch,
-  port: 3000
-}, (info) => {
-  console.log(`Server is running on http://localhost:${info.port}`)
-})
+img.use("/optimize/*", async (c) => {
+    // todo: image optimization requests
+    const url = new URL(c.req.raw.url.replace(/\/optimize/, ""));
+    return createIPXWebServer(ipx)(new Request(url));
+});
+
+// mount routes to main app
+const app = new Hono();
+app.route("/", img);
+
+serve(
+    {
+        fetch: app.fetch,
+        port: 3000,
+    },
+    (info) => {
+        console.log(
+            `image optimization server is running on http://localhost:${info.port}`
+        );
+    }
+);
