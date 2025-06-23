@@ -8,8 +8,7 @@ import {
 } from "ipx";
 
 const ipx = createIPX({
-    // todo: which directory am i serving images from
-    storage: ipxFSStorage({ dir: "./static" }),
+    storage: ipxFSStorage({ dir: "../client/public" }),
     // todo: which domain hosts my remote images? unsplash?
     httpStorage: ipxHttpStorage({
         domains: [],
@@ -20,7 +19,6 @@ const ipx = createIPX({
 const img = new Hono();
 
 img.use("/optimize/*", async (c) => {
-    // todo: image optimization requests
     const url = new URL(c.req.raw.url.replace(/\/optimize/, ""));
     return createIPXWebServer(ipx)(new Request(url));
 });
